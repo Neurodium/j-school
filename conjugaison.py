@@ -49,7 +49,6 @@ elif mode == "Participe":
         horizontal=True)
 
 conj = conjugator.conjugate(st.session_state.verb)
-print(conj.iterate())
 
 st.header(f"Conjugaison du verbe {st.session_state.verb}")
 st.subheader(f"{mode} {temps}")

@@ -194,5 +194,3 @@ for ope in ["add", "substract", "multiply", "divide"]:
     elif ope == "divide":
         st.header("Divisions")
     input_operations(ope)
-
-st.write(st.session_state)
