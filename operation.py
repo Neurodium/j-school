@@ -99,22 +99,22 @@ def input_operations(ope):
     for i in range(st.session_state[ope]["nb"]):
         if len(st.session_state[ope]["user_input"]) == st.session_state[ope]["nb"]:
             if ope == "add":
-                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} + {st.session_state[ope]["b"][i]} ?', value=None, step=None)
+                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} + {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None)
             elif ope == "substract":
-                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} - {st.session_state[ope]["b"][i]} ?', value=None, step=None)
+                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} - {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None)
             elif ope == "multiply":
-                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} * {st.session_state[ope]["b"][i]} ?', value=None, step=None)
+                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} * {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None)
             elif ope == "divide":
-                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} / {st.session_state[ope]["b"][i]} ?', value=None, step=None)
+                st.session_state[ope]["user_input"][i] = st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} / {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None)
         else:
             if ope == "add":
-                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} + {st.session_state[ope]["b"][i]} ?', value=None, step=None))
+                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} + {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None))
             elif ope == "substract":
-                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} - {st.session_state[ope]["b"][i]} ?', value=None, step=None))
+                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} - {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None))
             elif ope == "multiply":
-                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} * {st.session_state[ope]["b"][i]} ?', value=None, step=None))
+                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} * {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None))
             elif ope == "divide":
-                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} / {st.session_state[ope]["b"][i]} ?', value=None, step=None))
+                st.session_state[ope]["user_input"].append(st.number_input(f'Quel est le résultat de {st.session_state[ope]["a"][i]} / {st.session_state[ope]["b"][i]} ?', key=f'{ope}_{i}',value=None, step=None))
         if st.session_state[ope]["user_input"][i]:
             if st.session_state[ope]["user_input"][i] == st.session_state[ope]["result"][i]:
                 st.success("✅ Correct!")
@@ -133,28 +133,28 @@ if "divide" not in st.session_state:
 
 add1, add2, add3 = st.columns([1.1, 1, 1])
 with add1:
-    add_op = st.number_input("Combien d'opérations d'addition souhaitez-vous générer ?", min_value=0, max_value=10, value=3)
+    add_op = st.number_input("Combien d'opérations d'addition souhaitez-vous générer ?", min_value=0, max_value=10, value=3, key="nb_add")
 with add2:
     nb_a_add = st.number_input("Nombre de chiffres pour A (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_a_add")
 with add3:
     nb_b_add = st.number_input("Nombre de chiffres pour B (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_b_add")
 sub1, sub2, sub3 = st.columns([1.1, 1, 1])
 with sub1:
-    substract_op = st.number_input("Combien d'opérations de soustraction souhaitez-vous générer ?", min_value=0, max_value=10, value=3)
+    substract_op = st.number_input("Combien d'opérations de soustraction souhaitez-vous générer ?", min_value=0, max_value=10, value=3, key="nb_substract")
 with sub2:
     nb_a_sub = st.number_input("Nombre de chiffres pour A (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_a_substract")
 with sub3:
     nb_b_sub = st.number_input("Nombre de chiffres pour B (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_b_substract")
 mult1, mult2, mult3 = st.columns([1.1, 1, 1])
 with mult1:
-    multiply_op = st.number_input("Combien d'opérations de multiplication souhaitez-vous générer ?", min_value=0, max_value=10, value=3)
+    multiply_op = st.number_input("Combien d'opérations de multiplication souhaitez-vous générer ?", min_value=0, max_value=10, value=3, key="nb_multiply")
 with mult2:
     nb_a_mult = st.number_input("Nombre de chiffres pour A (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_a_multiply")
 with mult3:
     nb_b_mult = st.number_input("Nombre de chiffres pour B (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_b_multiply")
 div1, div2, div3 = st.columns([1.1, 1, 1])
 with div1:
-    divide_op = st.number_input("Combien d'opérations de division souhaitez-vous générer ?", min_value=0, max_value=10, value=3)
+    divide_op = st.number_input("Combien d'opérations de division souhaitez-vous générer ?", min_value=0, max_value=10, value=3, key="nb_divide")
 with div2:
     nb_a_div = st.number_input("Nombre de chiffres pour A (1, 2, 3 ou 4 chiffres) :", min_value=1, max_value=4, value=1, key="nb_a_divide")
 with div3:
