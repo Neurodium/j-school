@@ -1,26 +1,29 @@
 import streamlit as st
-from spellchecker import SpellChecker
 from mlconjug3 import Conjugator
 from verbe import get_random_verb
 from larousse_api import larousse
 
 
-# initialize the conjugator
-conjugator = Conjugator()
+@st.cache_resource
+def get_conjugator():
+    return Conjugator()
+
+conjugator = get_conjugator()
+
+@st.cache_data
+def get_definition(verb):
+    defs = larousse.get_definitions(verb)
+    return defs[0] if defs else "Définition non trouvée."
 
 # Titre de l'application
 st.title("Conjugaison de verbes français")
 
-# Générateur de verbe aléatoire
-init = get_random_verb()
-
 # Initialisation du verbe
 if 'verb' not in st.session_state:
-    st.session_state.verb = init
+    st.session_state.verb = get_random_verb()
 
 # Bouton pour générer un verbe aléatoire
-gen_verb = st.button("Générer un verbe aléatoire")
-if gen_verb:
+if st.button("🎲 Générer un verbe aléatoire", key="btn_gen_verb_main"):
     st.session_state.verb = get_random_verb()
 
 head1, head2, head3 = st.columns(3)
@@ -28,25 +31,20 @@ with head2:
     st.header(st.session_state.verb)
 
 st.subheader("Définition du verbe")
-st.subheader(larousse.get_definitions(st.session_state.verb)[0])
+st.subheader(get_definition(st.session_state.verb))
 
+# Choix du mode et du temps
 mode = st.radio("Choisissez le mode de conjugaison", ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Participe"],
-    horizontal=True)
-if mode == "Indicatif":
-    temps = st.radio("Choisissez le temps de conjugaison", ["Présent", "Imparfait", "Futur", "Passé Simple"],
-        horizontal=True)
-elif mode == "Subjonctif":
-    temps = st.radio("Choisissez le temps de conjugaison", ["Présent", "Imparfait"],
-        horizontal=True)
-elif mode == "Conditionnel":
-    temps = st.radio("Choisissez le temps de conjugaison", ["Présent"],
-        horizontal=True)
-elif mode == "Impératif":
-    temps = st.radio("Choisissez le temps de conjugaison", ["Imperatif Présent"],
-        horizontal=True)
-elif mode == "Participe":
-    temps = st.radio("Choisissez le temps de conjugaison", ["Participe Présent", "Participe Passé"],
-        horizontal=True)
+                horizontal=True)
+
+temps_disponibles = {
+    "Indicatif": ["Présent", "Imparfait", "Futur", "Passé Simple"],
+    "Subjonctif": ["Présent", "Imparfait"],
+    "Conditionnel": ["Présent"],
+    "Impératif": ["Imperatif Présent"],
+    "Participe": ["Participe Présent", "Participe Passé"]
+}
+temps = st.radio("Choisissez le temps de conjugaison", temps_disponibles[mode], horizontal=True)
 
 conj = conjugator.conjugate(st.session_state.verb)
 
@@ -54,44 +52,20 @@ st.header(f"Conjugaison du verbe {st.session_state.verb}")
 st.subheader(f"{mode} {temps}")
 
 
-je = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 1ère personne du singulier (je) :")
-if je:
-    if je == conj[mode][temps]["je"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['je']}")
+pronoms = {
+    "je": "1ère personne du singulier",
+    "tu": "2ème personne du singulier",
+    "il (elle, on)": "3ème personne du singulier",
+    "nous": "1ère personne du pluriel",
+    "vous": "2ème personne du pluriel",
+    "ils (elles)": "3ème personne du pluriel"
+}
 
-tu = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 2ème personne du singulier (tu) :")
-if tu:
-    if tu == conj[mode][temps]["tu"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['tu']}")
-
-il = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 3ème personne du singulier (il/elle/on) :")
-if il:
-    if il == conj[mode][temps]["il (elle, on)"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['il']}")
-
-nous = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 1ère personne du pluriel (nous) :")
-if nous:
-    if nous == conj[mode][temps]["nous"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['nous']}")
-
-vous = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 2ème personne du pluriel (vous) :")
-if vous:
-    if vous == conj[mode][temps]["vous"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['vous']}")
-
-ils = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la 3ème personne du pluriel (ils/elles) :")
-if ils:
-    if ils == conj[mode][temps]["ils (elles)"]:
-        st.success("✅ Correct!")
-    else:
-        st.error(f"❌ Incorrect. La bonne réponse est : {conj[mode][temps]['ils']}")
+for pronom, description in pronoms.items():
+    saisie = st.text_input(f"Conjuge le verbe {st.session_state.verb} à la {description} ({pronom}) :", key=f"{pronom}_{mode}_{temps}")
+    if saisie:
+        bonne_reponse = conj[mode][temps].get(pronom) or conj[mode][temps].get(pronom.split(" ")[0])
+        if saisie == bonne_reponse:
+            st.success("✅ Correct!")
+        else:
+            st.error(f"❌ Incorrect. La bonne réponse est : {bonne_reponse}")
